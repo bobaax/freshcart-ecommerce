@@ -1,0 +1,69 @@
+<div class="relative">
+
+    @if (element === 'input') {
+    <input
+    [class]="{
+        'border-[var(--main-color)]': control?.valid,
+        'border-red-500': control?.invalid && control?.touched
+    }"
+    [formControl]="control"
+    [type]="typeInput"
+    [id]="idInput"
+    class="main-input my-5 peer"
+    placeholder="" />
+    } 
+
+    @else if (element === 'textarea') {
+    <textarea
+    [class]="{
+        'border-[var(--main-color)]': control?.valid,
+        'border-red-500': control?.invalid && control?.touched
+    }"
+    [formControl]="control"
+    [id]="idInput"
+    class="main-input my-5 peer"
+    placeholder="" ></textarea>
+
+    }
+
+    <label [for]="idInput" class="main-label">{{ labelInput }}</label>
+@if ((control?.errors && control?.touched)){
+<div
+    class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+    role="alert"
+>
+    <svg
+    class="shrink-0 inline w-4 h-4 me-3 mt-[2px]"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    >
+    <path
+        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
+    />
+    </svg>
+    <span class="sr-only">Danger</span>
+    <div>
+        <span class="font-medium">Ensure that these requirements are met:</span>
+        <ul class="mt-1.5 list-disc list-inside">
+        @if (control?.hasError('required')) {
+        <li>Input is required</li>
+        } @if (control?.hasError('minlength') || control?.hasError('maxlength'))
+        {
+        <li>Input should be at least 8 characters</li>
+        } @if (control?.hasError('email')) {
+        <li>Please enter a valid email</li>
+        } @if (control?.hasError('pattern')) {
+        <li><ng-content></ng-content></li>
+        } @if (control?.hasError('missMatch')) {
+        <li>Passwords do not match</li>
+        }
+    </ul>
+    </div>
+</div>
+}
+</div>
+
+
+

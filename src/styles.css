@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+@utility container {
+    margin-inline:auto;
+    
+}
+.card {
+    @apply border border-gray-400 shadow-lg p-2 relative rounded;
+
+}
+
+
+
+@layer components {
+    .button {
+    @apply disabled:bg-gray-300 disabled:cursor-not-allowed bg-[var(--main-color)] text-white py-2 w-full border rounded border-green-500 cursor-pointer hover:bg-green-900 transition-all duration-300;
+}
+    .main-input {
+    @apply   block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none    focus:outline-none focus:ring-0 focus:border-[var(--main-color)]
+    }
+    .main-label {
+    @apply absolute text-sm text-gray-500  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-[var(--main-color)]  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1
+    }
+
+}
+
+
+:root{
+    --main-color: #0aad0a;
+
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+}
+
+
+.btn-main {
+background-color: var(--main-color);
+padding: 7px 20px;
+border: 1px solid #ccc;
+border-radius: 5px;
+color: #fff;
+cursor: pointer;
+transition: background-color 0.5s;
+}
+.btn-main:disabled {
+cursor: not-allowed;
+background-color: #ccc;
+}
+.btn-main:disabled:hover {
+background-color: #ccc;
+}
+.btn-main:hover {
+background-color: #11bd11;
+}

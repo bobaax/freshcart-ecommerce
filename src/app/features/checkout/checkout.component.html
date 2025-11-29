@@ -1,0 +1,30 @@
+<section class="bg-gray-200 p-4 md:w-1/2 mx-auto shadow my-14">
+    <h1 class="text-center text-4xl my-3 text-[var(--main-color)]">Checkout</h1>
+    <form [formGroup]="checkOutForm" (ngSubmit)="submitForm()" >
+    <app-input
+    [element]="'textarea'"
+    [control]="checkOutForm.get('shippingAddress')?.get('details')"
+    [id]="'details'"
+    [labelInput]="'Details'"
+    ></app-input>
+    <app-input
+    [element]="'input'"
+    [control]="checkOutForm.get('shippingAddress')?.get('phone')"
+    [id]="'phone'"
+    [labelInput]="'Phone'"
+    [typeInput]="'tel'"
+    > only Egyption phone numbers allowed (01xxxxxxxxx)
+</app-input>
+    <app-input
+    [element]="'input'"
+    [control]="checkOutForm.get('shippingAddress')?.get('city')"
+    [id]="'city'"
+    [labelInput]="'City'"
+    [typeInput]="'text'"
+    ></app-input>
+    <div class=" gap-4">
+        <button  class="w-full btn-main ">Pay with Visa</button>
+    </div>
+
+    </form>
+</section>

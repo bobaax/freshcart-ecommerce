@@ -1,0 +1,70 @@
+<section class="rounded-lg border border-gray-200 p-4 shadow-md md:w-1/2 mx-auto my-14">
+    <h1 class="text-start mb-3 font-medium text-3xl">Register Now :</h1>
+    <form [formGroup]="registerform" (ngSubmit)="submitForm()">
+
+
+    <app-input
+        [control]="registerform.get('name')"
+        [labelInput]="'Name'"
+        [typeInput]="'text'"
+        [idInput]="'name'"
+        ></app-input>
+
+    <app-input
+        [control]="registerform.get('email')"
+        [labelInput]="'Email'"
+        [typeInput]="'email'"
+        [idInput]="'email'"
+    ></app-input>
+
+    <app-input
+        [control]="registerform.get('password')"
+        [labelInput]="'Password'"
+        [typeInput]="'password'"
+        [idInput]="'password'"
+    >
+        Custom field should match the pattern
+</app-input>
+
+
+
+    <app-input
+        [control]="registerform.get('rePassword')"
+        [labelInput]="'Re-Password'"
+        [typeInput]="'password'"
+        [idInput]="'rePassword'"
+    >
+        Passwords do not match
+</app-input>
+
+
+
+    <app-input
+        [control]="registerform.get('phone')"
+        [labelInput]="'Phone'"
+        [typeInput]="'tel'"
+        [idInput]="'phone'"
+    >
+        Accept only Egyptian phone numbers
+</app-input>
+
+
+        <button [disabled]="isLoading" type="submit" class="btn-main">Register
+            @if (isLoading) {
+                <span><i class="fas fa-spinner animate-spin"></i></span>
+            }
+        </button>
+
+        @if (errorMsg ) {
+            <div class="flex mt-4 items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 " role="alert">
+        <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div>
+    <span class="font-medium">Danger alert!</span> {{ errorMsg }}
+    </div>
+</div>
+        }
+    </form>
+</section>

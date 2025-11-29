@@ -1,0 +1,11 @@
+<section class="bg-gray-100 py-16 border border-gray-400">
+    <div class="container">
+        <h2 class="text-5xl text-[var(--main-color)]">Popular Products</h2>
+        <div class="parent grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-4 mt-10">
+            @for (product of productsList.slice(0, 12); track product.id) {
+            <app-card [product]="product"></app-card>
+            }
+
+        </div>
+    </div>
+</section>

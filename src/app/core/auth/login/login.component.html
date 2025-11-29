@@ -1,0 +1,40 @@
+<section class="rounded-lg border border-gray-200 p-4 shadow-md md:w-1/2 mx-auto my-14">
+    <h1 class="text-start mb-3 font-medium text-3xl">Login Now :</h1>
+    <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm()">
+
+    <app-input
+        [control]="loginForm.get('email')"
+        [labelInput]="'Email'"
+        [typeInput]="'email'"
+        [idInput]="'email'"
+    ></app-input>
+    <app-input
+        [control]="loginForm.get('password')"
+        [labelInput]="'Password'"
+        [typeInput]="'password'"
+        [idInput]="'password'"
+    ></app-input>
+
+
+        <div class="flex justify-between items-center space-x-10 mt-4">
+            <a routerLink="/forget" class="text-[var(--main-color)] hover:text-green-800 cursor-pointer transition-colors duration-200">Forget Password?</a>
+        <button type="submit" class="btn-main">Login
+            @if (isLoading) {
+                <span><i class="fas fa-spinner animate-spin"></i></span>
+            }
+        </button>
+        </div>
+
+        @if (errorMsg ) {
+            <div class="flex mt-4 items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 " role="alert">
+        <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div>
+    <span class="font-medium">Danger alert!</span> {{ errorMsg }}
+    </div>
+</div>
+        }
+    </form>
+</section>
