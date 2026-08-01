@@ -1,9 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators ,FormGroup, AbstractControl} from '@angular/forms';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { InputComponent } from "../../../shared/components/input/input.component";
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CookieService } from 'ngx-cookie-service';
 
 @Component({
@@ -13,61 +13,49 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
-  errorMsg:string = '';
+  errorMsg: string = '';
   isLoading = false;
-  loginForm!:FormGroup;
-  subscription:Subscription = new Subscription();
+  loginForm!: FormGroup;
+
+  private readonly authService = inject(AuthService);
+  private readonly cookieService = inject(CookieService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.initLoginForm();
   }
 
-  private readonly authService = inject(AuthService);
-  private readonly cookieService = inject(CookieService);
-  private readonly router = inject(Router);
-
-  confirmPassword(group: AbstractControl) {
-
-  return group.get('password')?.value === group.get('rePassword')?.value ? null : { missMatch: true };
-
-}
-
-
-  initLoginForm():void {
+  initLoginForm(): void {
     this.loginForm = new FormGroup({
-    email: new FormControl(null, [Validators.required, Validators.email]),
-    password: new FormControl(null, [Validators.required, Validators.pattern(/^\w{6,}$/)]),
-    } ); }
-  
-
-  submitLoginForm():void {
-    if (this.loginForm.valid) {
-      this.subscription.unsubscribe();
-      this.isLoading = true;
-      this.subscription = this.authService.loginForm(this.loginForm.value).subscribe({
-        next: (res) => {
-          console.log('Login successful', res);
-          if (res.message === 'success') {
-            this.errorMsg = '';
-            this.cookieService.set('token', res.token);
-            console.log(this.authService.decodeToken());
-            setTimeout(() => {
-            this.router.navigate(['/home']);
-            }, 1000);
-            this.isLoading = true;
-            this.loginForm.reset();
-          }
-        },
-        error: (err) => {
-          console.error('Login failed', err);
-          this.isLoading = false;
-          this.errorMsg = err.error.message;
-        }
-      });
-    }
-    
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      password: new FormControl(null, [Validators.required, Validators.pattern(/^\w{6,}$/)]),
+    });
   }
 
-  
-  
+  submitLoginForm(): void {
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.authService.loginForm(this.loginForm.value)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res) => {
+            if (res.message === 'success') {
+              this.errorMsg = '';
+              this.cookieService.set('token', res.token);
+              this.isLoading = false; // ✅ إصلاح: كانت true بالخطأ
+              this.loginForm.reset();
+              setTimeout(() => {
+                this.router.navigate(['/home']);
+              }, 1000);
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.errorMsg = err.error.message;
+          }
+        });
+    }
+  }
 }
+

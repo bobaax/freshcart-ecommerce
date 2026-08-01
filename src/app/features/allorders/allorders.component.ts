@@ -1,34 +1,39 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CartService } from '../cart/services/cart.service';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-allorders',
-  imports: [],
+  imports: [CurrencyPipe, DatePipe, NgClass],
   templateUrl: './allorders.component.html',
   styleUrl: './allorders.component.css'
 })
 export class AllordersComponent implements OnInit {
 
   private readonly cartService = inject(CartService);
+  private readonly destroyRef = inject(DestroyRef);
 
+  orders: any[] = [];
+  ordersLoaded = false;
 
-  orders:any[] = [];
-
-  ngOnInit():void{
+  ngOnInit(): void {
     this.getAllOrders();
   }
 
-  getAllOrders():void{
-    this.cartService.getAllOrders().subscribe({
-      next: (res) => {
-        this.orders = res.data;
-        console.log(this.orders);
-      },
-      error: (err) => {
-        console.error('Error fetching orders', err);
-      }
-    });
+  getAllOrders(): void {
+    this.cartService.getAllOrders()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.orders = res;
+          this.ordersLoaded = true;
+        },
+        error: (err) => {
+          console.error('Error fetching orders', err);
+          this.ordersLoaded = true;
+        }
+      });
   }
-
 }
+

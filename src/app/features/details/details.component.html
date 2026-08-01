@@ -3,10 +3,10 @@
     <div class="grid sm:grid-cols-12 container items-center gap-4 p-5">
         <div class=" col-span-9 ">
         <owl-carousel-o [options]="detailsSliderOptions">
-        @for (product of productDetails.images; track productDetails._id) {
-        <ng-template carouselSlide [id]="productDetails._id">
+        @for (image of productDetails.images; track image) {
+        <ng-template carouselSlide [id]="image">
             <div class=" rounded p-2">
-                <img [src]="productDetails.imageCover" class="w-full h-[500px] " [alt]="productDetails.title" [title]="productDetails.title">
+                <img [src]="image" class="w-full h-[500px] object-cover" [alt]="productDetails.title" [title]="productDetails.title">
             </div>
         </ng-template>
         }
@@ -15,16 +15,15 @@
         <div class=" col-span-3">
             <h2 class="text-2xl">{{productDetails.title}}</h2>
             <p class="text-gray-700 text-sm my-2">{{productDetails.description}}</p>
-            <span>{{productDetails.category.name}}</span>
+            <span>{{productDetails.category?.name}}</span>
 
 <div class="flex items-center justify-between">
     <span>{{productDetails.price}} EGP</span>
     <span><i class="fas fa-star text-yellow-500"></i>{{productDetails.ratingsAverage}}</span>
 </div>
-<button type="button"  class="btn-main w-100 mt-2">Add To Cart</button>
+<!-- ✅ إصلاح: تفعيل زر Add to Cart -->
+<button type="button" (click)="addToCart(productDetails._id)" class="btn-main w-100 mt-2">Add To Cart</button>
 
 </div>
     </div>
-</section>
-
-<!-- (click)="addToCart(productDetails._id)" -->
+</section>

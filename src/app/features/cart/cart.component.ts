@@ -1,13 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CartService } from './services/cart.service';
 import { Cart } from './models/cart.interface';
 import { RouterLink } from '@angular/router';
-
-
-
-
-
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-cart',
@@ -15,57 +10,57 @@ import { RouterLink } from '@angular/router';
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
-export class CartComponent implements OnInit  {
+export class CartComponent implements OnInit {
   private readonly cartService = inject(CartService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  cartDetails:Cart={} as Cart;
+  cartDetails: Cart = {} as Cart;
+  cartLoaded = false; // ✅ flag لتمييز حالة التحميل عن السلة الفارغة
 
   ngOnInit(): void {
-    this.getLogedUserData();
+    this.getCartData();
   }
 
-  getLogedUserData(): void {
-    this.cartService.getCartItems().subscribe({
-      next: (res) => {
-        console.log(res.data);
-        this.cartDetails = res.data;
-      },
-      error: (err) => {
-        console.error('Error fetching cart items:', err);
-      }
-    });
+  getCartData(): void {
+    this.cartService.getCartItems()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.cartDetails = res.data;
+          this.cartService.countNumber.set(res.numOfCartItems); // ✅ sync العداد
+          this.cartLoaded = true;
+        },
+        error: (err) => {
+          console.error('Error fetching cart items:', err);
+          this.cartLoaded = true;
+        }
+      });
   }
 
   updateQuantity(id: string, quantity: number): void {
-    this.cartService.updateCartItemQuantity(id, quantity).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.cartDetails = res.data; // Refresh cart data after quantity update
-      },
-      error: (err) => {
-        console.error('Error updating cart item quantity:', err);
-      }
-    });
+    this.cartService.updateCartItemQuantity(id, quantity)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.cartDetails = res.data;
+        },
+        error: (err) => {
+          console.error('Error updating cart item quantity:', err);
+        }
+      });
   }
 
-  
   removeFromCart(id: string): void {
-    this.cartService.removeCartItem(id).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.cartService.countNumber.set(res.numOfCartItems);
-        this.cartDetails = res.data; // Refresh cart data after removal
-      },
-      error: (err) => {
-        console.error('Error removing cart item:', err);
-      }
-    });
+    this.cartService.removeCartItem(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.cartService.countNumber.set(res.numOfCartItems);
+          this.cartDetails = res.data;
+        },
+        error: (err) => {
+          console.error('Error removing cart item:', err);
+        }
+      });
   }
-  
-
 }
-
-
-
-
-

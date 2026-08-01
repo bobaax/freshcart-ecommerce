@@ -21,9 +21,9 @@
         <li>
         <a routerLink="/categories" routerLinkActive="text-white  bg-[var(--main-color)] hover:text-black" class="block py-2 px-3  rounded-sm  md:p-1 cursor-pointer text-gray-600 hover:text-[var(--main-color)] transition-colors duration-200" aria-current="page">Categories</a>
         </li>
-        <!-- <li>
+        <li>
         <a routerLink="/brands" routerLinkActive="text-white  bg-[var(--main-color)] hover:text-black" class="block py-2 px-3  rounded-sm  md:p-1 cursor-pointer text-gray-600 hover:text-[var(--main-color)] transition-colors duration-200" aria-current="page">Brands</a>
-        </li> -->
+        </li>
     </ul>
     }
     <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border ms-auto  border-gray-100 rounded-lg  md:flex-row md:space-x-3 rtl:space-x-reverse md:mt-0 md:border-0 ">
@@ -46,7 +46,7 @@
             <a routerLink="/cart" routerLinkActive="text-[var(--main-color)] hover:text-black" class="block py-2 px-3  rounded-sm  md:p-1 cursor-pointer text-gray-600 hover:text-[var(--main-color)] transition-colors duration-200" aria-current="page"><i class="fas fa-shopping-cart"></i></a>
             <span class=" text-[var(--main-color)] bg-white text-md  font-bold  rounded-full absolute top-0 right-0 z-100">{{count()}}</span>
             </li>
-            <li (click)="signOut()" routerLink="/cart" >
+            <li (click)="signOut()" class="cursor-pointer">
             <a  class="block py-2 px-3 cursor-pointer rounded-sm  md:p-0 text-gray-600 hover:text-[var(--main-color)] transition-colors duration-200" aria-current="page">Sign Out</a>
             </li>
         }

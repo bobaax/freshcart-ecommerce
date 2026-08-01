@@ -1,4 +1,14 @@
-import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+interface Brand {
+  _id: string;
+  name: string;
+  slug: string;
+  image: string;
+}
 
 @Component({
   selector: 'app-brands',
@@ -6,15 +16,30 @@ import { Component, computed, Signal, signal, WritableSignal } from '@angular/co
   templateUrl: './brands.component.html',
   styleUrl: './brands.component.css'
 })
-export class BrandsComponent {
-  price: WritableSignal<number> = signal(100);
-  quantity: WritableSignal<number> = signal(20);
-  totolprice: Signal<number> = computed( () => this.price() * this.quantity() );
+export class BrandsComponent implements OnInit {
+  private readonly httpClient = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
-  changeprice():void {
-    this.price.update((value) => value + 10);
-    console.log(this.price());
+  brandsList: Brand[] = [];
+  brandsLoaded = false;
+
+  ngOnInit(): void {
+    this.getAllBrands();
   }
 
-
+  getAllBrands(): void {
+    this.httpClient.get<any>(environment.baseUrl + 'brands')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.brandsList = res.data;
+          this.brandsLoaded = true;
+        },
+        error: (err) => {
+          console.error('Error fetching brands:', err);
+          this.brandsLoaded = true;
+        }
+      });
+  }
 }
+

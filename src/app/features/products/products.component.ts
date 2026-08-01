@@ -1,53 +1,51 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ProductsService } from '../../core/services/products/products.service';
 import { CardComponent } from "../../shared/components/card/card.component";
 import { Products } from '../../core/models/products.interface';
-import {NgxPaginationModule} from 'ngx-pagination';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { SearchPipe } from './../../shared/pipes/search-pipe';
 import { FormsModule } from '@angular/forms';
-import { NgxSpinnerService } from 'ngx-spinner';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-products',
-  imports: [CardComponent,NgxPaginationModule, SearchPipe, FormsModule],
+  imports: [CardComponent, NgxPaginationModule, SearchPipe, FormsModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
 export class ProductsComponent implements OnInit {
-  private readonly productsService = inject(ProductsService)
-  private readonly ngxSpinnerService = inject(NgxSpinnerService)
-  
-  
-    productsList:Products[] = [];
+  private readonly productsService = inject(ProductsService);
+  private readonly destroyRef = inject(DestroyRef);
+  // ✅ إصلاح: حذف NgxSpinnerService (غير مستخدم — الـ loading interceptor يتكفل بالـ spinner)
 
-    searchTerm:string = ''
+  productsList: Products[] = [];
+  searchTerm: string = '';
+  pageSize!: number;
+  p!: number;
+  total!: number;
 
-    pageSize!:number
-    p!:number
-    total!:number
-
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.getAllProductsData();
-  
-    }
-    search(event:any):void{
-      this.searchTerm = event.target.value;
-    }
-    getAllProductsData(pageNum:number = 1):void {
-      
-      this.productsService.getAllProducts(pageNum).subscribe({
-        next:(res)=>{
-          console.log(res.data)
+  }
+
+  search(event: any): void {
+    this.searchTerm = event.target.value;
+  }
+
+  getAllProductsData(pageNum: number = 1): void {
+    this.productsService.getAllProducts(pageNum)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
           this.productsList = res.data;
           this.pageSize = res.metadata.limit;
           this.p = res.metadata.currentPage;
           this.total = res.results;
         },
-        error:(err)=>{
-          console.error(err)
+        error: (err) => {
+          console.error(err);
         }
       });
-    }
-
+  }
 }
+

@@ -1,11 +1,9 @@
 import { AuthService } from './../services/auth.service';
-import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators ,FormGroup, AbstractControl} from '@angular/forms';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators, FormGroup, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InputComponent } from "../../../shared/components/input/input.component";
-import { Subscription } from 'rxjs';
-
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-register',
@@ -14,64 +12,60 @@ import { Subscription } from 'rxjs';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit {
-  errorMsg:string = '';
+  errorMsg: string = '';
   isLoading = false;
-  registerform!:FormGroup;
-  subscription:Subscription = new Subscription();
+  registerform!: FormGroup;
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
   confirmPassword(group: AbstractControl) {
+    if (group.get('password')?.value === group.get('rePassword')?.value) { return null; }
+    else {
+      group.get('rePassword')?.setErrors({ missMatch: true });
+      return { missMatch: true };
+    }
+  }
 
-  if (group.get('password')?.value === group.get('rePassword')?.value){ return null}
-
-  else {
-    group.get('rePassword')?.setErrors({missMatch:true});
-    return { missMatch: true }; }
-}
   ngOnInit(): void {
     this.initForm();
   }
 
-  initForm():void {
+  initForm(): void {
     this.registerform = new FormGroup({
-    name: new FormControl(null, [Validators.required, Validators.minLength(3),Validators.maxLength(20)]),
-    email: new FormControl(null, [Validators.required, Validators.email]),
-    password: new FormControl(null, [Validators.required, Validators.pattern(/^\w{6,}$/)]),
-    rePassword: new FormControl(null, [Validators.required]),
-    phone: new FormControl(null, )
-  }, {validators: this.confirmPassword} );
+      name: new FormControl(null, [Validators.required, Validators.minLength(3), Validators.maxLength(20)]),
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      password: new FormControl(null, [Validators.required, Validators.pattern(/^\w{6,}$/)]),
+      rePassword: new FormControl(null, [Validators.required]),
+      phone: new FormControl(null, [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]) // ✅ إصلاح: تم إضافة validation للهاتف
+    }, { validators: this.confirmPassword });
   }
 
-  submitForm():void {
+  submitForm(): void {
     if (this.registerform.valid) {
       this.isLoading = true;
-      console.log(this.registerform.value);
-      this.subscription.unsubscribe();
-      this.subscription = this.authService.registerForm(this.registerform.value).subscribe({
-        next: (res) => {
-          console.log('Registration successful', res);
-          if (res.message === 'success') {
-            this.errorMsg = '';
-            setTimeout(() => {
-            this.router.navigate(['/login']);
-            }, 1000);
+      this.authService.registerForm(this.registerform.value)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res) => {
+            if (res.message === 'success') {
+              this.errorMsg = '';
+              this.isLoading = false;
+              this.registerform.reset();
+              setTimeout(() => {
+                this.router.navigate(['/login']);
+              }, 1000);
+            }
+          },
+          error: (err) => {
             this.isLoading = false;
-            this.registerform.reset();
+            this.errorMsg = err.error.message;
           }
-        },
-        error: (err) => {
-          console.error('Registration failed', err);
-          this.isLoading = false;
-          this.errorMsg = err.error.message;
-        }
-      });
-    }
-    else {
-      this.registerform.setErrors({mismatch:true});
+        });
+    } else {
       this.registerform.markAllAsTouched();
     }
-    
   }
-
 }
+

@@ -5,17 +5,16 @@ import { CookieService } from 'ngx-cookie-service';
 export const headersInterceptor: HttpInterceptorFn = (req, next) => {
 
   const cookieService = inject(CookieService);
-    if (cookieService.check('token')) {
-      if(req.url.includes('cart') || req.url.includes('wishlist') || req.url.includes('orders')){
-        req = req.clone({
-    setHeaders: {
-      token: cookieService.get('token') || ''
-    }
-  });
+  const token = cookieService.get('token');
+
+  if (token && !req.url.includes('auth/')) {
+    req = req.clone({
+      setHeaders: {
+        token: token
       }
+    });
+  }
 
-      ;
-} 
-return next(req);
-
+  return next(req);
 };
+

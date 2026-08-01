@@ -1,7 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CardComponent } from "../../../../shared/components/card/card.component";
 import { ProductsService } from '../../../../core/services/products/products.service';
 import { Products } from '../../../../core/models/products.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-popular-products',
@@ -10,9 +11,10 @@ import { Products } from '../../../../core/models/products.interface';
   styleUrl: './popular-products.component.css'
 })
 export class PopularProductsComponent implements OnInit {
-  private readonly productsService = inject(ProductsService)
+  private readonly productsService = inject(ProductsService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  productsList:Products[] = [];
+  productsList: Products[] = [];
 
   ngOnInit(): void {
   this.getAllProductsData();
@@ -20,12 +22,14 @@ export class PopularProductsComponent implements OnInit {
   }
 
   getAllProductsData():void {
-    this.productsService.getAllProducts().subscribe({
-      next:(res)=>{console.log(res.data)
-        this.productsList = res.data;
-      },
-      error:(err)=>{console.error(err)}
-    });
+    this.productsService.getAllProducts()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.productsList = res.data;
+        },
+        error: (err) => { console.error(err); }
+      });
   }
 
 

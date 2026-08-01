@@ -1,7 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CategoriesService } from '../../../../core/services/categories/categories.service';
 import { Category } from '../../../../core/models/category.interface';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-popular-categories',
   imports: [CarouselModule],
@@ -9,8 +10,9 @@ import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
   styleUrl: './popular-categories.component.css'
 })
 export class PopularCategoriesComponent implements OnInit {
-  private readonly categoriesService = inject(CategoriesService)
-  categoriesList:Category[] = []
+  private readonly categoriesService = inject(CategoriesService);
+  private readonly destroyRef = inject(DestroyRef);
+  categoriesList: Category[] = [];
   categoriesOptions: OwlOptions = {
     loop: true,
     mouseDrag: true,
@@ -44,15 +46,16 @@ export class PopularCategoriesComponent implements OnInit {
   }
 
   getAllCategoriesData(): void {
-    this.categoriesService.getAllCategories().subscribe({
-      next: (res) => {
-        console.log(res.data);
-        this.categoriesList = res.data;
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+    this.categoriesService.getAllCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.categoriesList = res.data;
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
   }
 
 }
