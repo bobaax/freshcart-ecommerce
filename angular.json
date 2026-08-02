@@ -43,12 +43,7 @@
               "src/styles.css",
               "node_modules/ngx-toastr/toastr.css"
             ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "prerender": false,
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
