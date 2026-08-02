@@ -1,11 +1,11 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CartService } from '../cart/services/cart.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-allorders',
-  imports: [CurrencyPipe, DatePipe, NgClass],
+  imports: [DatePipe, NgClass],
   templateUrl: './allorders.component.html',
   styleUrl: './allorders.component.css'
 })

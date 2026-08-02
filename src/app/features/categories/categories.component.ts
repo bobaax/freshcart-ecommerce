@@ -2,12 +2,12 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../core/models/category.interface';
 import { CategoriesService } from '../../core/services/categories/categories.service';
-import { CardComponent } from "../../shared/components/card/card.component";
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-categories',
-  imports: [RouterLink, CardComponent],
+  imports: [RouterLink],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.css'
 })
